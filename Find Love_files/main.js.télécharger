@@ -1,0 +1,102 @@
+// Redirect
+function doRedirect(){
+    let originalURL     = 'https://5rxrk.bemobtrcks.com/click';
+
+    // Get query params
+    const queryString   = window.location.search;
+    const urlParams     = new URLSearchParams(queryString);
+
+    // Turn query params into object
+    const entries       = urlParams.entries();
+
+    // Dynamically create hidden inputs
+    // with key/value pairs from search params
+    //const formTracking  = document.querySelectorAll('.form--tracking');
+
+    const exceptions    = ['lg', 'ctg', 'v', 'pn'];
+
+    let trackAge        = false;
+    let key1            = '';
+    let key2            = '';
+
+    for(const [key, value] of entries){
+        if(key === 'key1'){
+            key1 = value;
+        }else if(key === 'key2'){
+            key2 = value;
+        }else{
+            if(key === 'age'){
+                trackAge = true;
+            }
+        }
+    }
+
+    if(key1 === '' && key2 === ''){
+        if(!originalURL.includes('?lp=1')){
+            originalURL += '?lp=1';
+        }
+
+        if(trackAge){
+            let ageDataset = btn.dataset.age;
+
+            if(ageDataset === '30-34' || ageDataset === '35-plus' || ageDataset === 'older-30'){
+                originalURL += '&to_offer=1';
+            }else{
+                originalURL += '&to_offer=2';
+            }
+        }
+    }
+
+    if(key1 && key2){
+        const fullUrl   = originalURL + `?key=${key1}`;
+        const fullUrl2  = originalURL + `?key=${key2}`;
+
+        window.open(fullUrl);
+
+        setTimeout(function (){
+            window.location.href = fullUrl2;
+        }, 100);
+    }else{
+        window.location.href = originalURL;
+    }
+}
+
+// Fetch the language from the URL query parameter
+function getLanguageFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('lang') || 'en'; // Default to English if no language is specified
+}
+  
+// Load the translations JSON file
+async function loadTranslations() {
+    const response = await fetch('/dating/love/bkp/translations.json');
+    return await response.json();
+}
+  
+// Translate the page based on the selected language
+async function translatePage() {
+    const translations = await loadTranslations();
+    const language = getLanguageFromURL();
+    const translationData = translations[language] || translations['en'];
+  
+    // Find all elements with `data-translate` and apply translations
+    document.querySelectorAll('[data-translate]').forEach((el) => {
+      const key = el.getAttribute('data-translate');
+      if (translationData[key]) {
+        el.textContent = translationData[key];
+      }
+    });
+
+    // Show elements after translation
+    document.querySelectorAll('.load-element').forEach((parent) => {
+        Array.from(parent.children).forEach((child) => {
+            child.classList.add('loaded');
+        });                    
+    }); 
+}
+ 
+translatePage();
+
+// Run the translation function on page load
+//document.addEventListener('DOMContentLoaded', translatePage);
+  
